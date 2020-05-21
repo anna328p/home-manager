@@ -9,10 +9,20 @@ with lib;
     services.syncthing = {
       enable = mkEnableOption "Syncthing continuous file synchronization";
 
-      tray = mkOption {
-        type = types.bool;
-        default = false;
-        description = "Whether to enable QSyncthingTray service.";
+      tray = {
+        enable = mkOption {
+          type = types.bool;
+          default = false;
+          description = "Whether to enable a syncthing tray service.";
+        };
+
+        package = mkOption {
+          type = types.package;
+          default = pkgs.syncthingtray-minimal;
+          defaultText = literalExample "pkgs.syncthingtray-minimal";
+          example = literalExample "pkgs.qsyncthingtray";
+          description = "Syncthing tray package to use";
+        };
       };
     };
   };
@@ -43,11 +53,11 @@ with lib;
       };
     })
 
-    (mkIf config.services.syncthing.tray {
+    (mkIf config.services.syncthing.tray.enable {
       systemd.user.services = {
-        qsyncthingtray = {
+        "${config.services.syncthing.tray.package.pname}" = {
           Unit = {
-            Description = "QSyncthingTray";
+            Description = config.services.syncthing.tray.package.pname;
             After = [
               "graphical-session-pre.target"
               "polybar.service"
@@ -58,8 +68,8 @@ with lib;
           };
 
           Service = {
-            Environment = "PATH=${config.home.profileDirectory}/bin";
-            ExecStart = "${pkgs.qsyncthingtray}/bin/QSyncthingTray";
+            ExecStart =
+              "${config.services.syncthing.tray.package}/bin/${config.services.syncthing.tray.package.pname}";
           };
 
           Install = { WantedBy = [ "graphical-session.target" ]; };

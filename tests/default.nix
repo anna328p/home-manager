@@ -52,6 +52,7 @@ import nmt {
     ./modules/programs/kakoune
     ./modules/programs/lf
     ./modules/programs/lieer
+    ./modules/programs/man
     ./modules/programs/mbsync
     ./modules/programs/ncmpcpp
     ./modules/programs/ne
@@ -65,9 +66,12 @@ import nmt {
     ./modules/programs/starship
     ./modules/programs/texlive
     ./modules/programs/tmux
+    ./modules/programs/vscode
     ./modules/programs/zplug
     ./modules/programs/zsh
     ./modules/xresources
+  ] ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
+    ./modules/targets-darwin
   ] ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [
     ./meta # Suffices to run on one platform.
     ./modules/misc/debug
@@ -92,6 +96,6 @@ import nmt {
     ./modules/services/window-managers/i3
     ./modules/services/window-managers/sway
     ./modules/systemd
-    ./modules/targets
+    ./modules/targets-linux
   ]);
 }
